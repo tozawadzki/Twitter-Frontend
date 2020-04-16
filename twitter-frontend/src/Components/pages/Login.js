@@ -1,5 +1,6 @@
+import axios from 'axios';
 import React, { Component } from "react";
-import { Link } from "react-router-dom"
+import { Redirect, Link } from "react-router-dom"
 
 export default class Login extends Component { 
     constructor(props) {
@@ -7,7 +8,9 @@ export default class Login extends Component {
         this.state={
             email: "", 
             password: "",
-            success: false
+            success: false,
+            redirect: false,
+            token: ""
         };
 
         this.handleChange = this.handleChange.bind(this);
@@ -28,16 +31,22 @@ export default class Login extends Component {
     }
 
     isValid(){
+        this.success = true;
         //calls backend with login data
         //backend checks whether user with such email and password exists in the database
         //sets success = true/false
     }
 
     handleSigningIn() {
+        if(this.success)
+        {
+            this.getJwtToken();
+            localStorage.setItem("JSON Web Token", this.token);
+            this.setRedirect();
+        }
         //success === true -> redirect to home page of an app
         //success === false -> invalid username/password
         //Odpowiedź - użytkownik nie istanieje
-        //istnieje ale złe hasło -> zła praktyka
         //istnieje i hasło spoko - token z backendu
         //odpowiedź z backendu to JSON -> w środku token z wartością (header)
         //napisać endpoint w kontrolerze który zwróci JWT Token - encoded z jwt.io
@@ -52,6 +61,31 @@ export default class Login extends Component {
         //localStorage.setItem('myValueInLocalStorage', event.target.value);
         //za każdym razem trzeba sprawdzać czy response nie jest 401 
         //React Hoooks -> zastępstwo HOC 401 + dodawanie tokena do każdego requesta
+    }
+
+    setRedirect = () => {
+        this.setState({
+            redirect: true
+        })
+    }
+
+    renderRedirect = () => {
+        if (this.state.redirect) {
+            return <Redirect to='/password-sent' />
+        }
+    }
+
+    getJwtToken = () => {
+        axios.get(`https://localhost:44391/api/Users/authenticate`)
+            .then(response => {
+                const data = response.data;
+                alert("Successfully catchend backend data")
+                this.setState({ 
+                    token: data.jwt
+                 });
+            }).catch(() => {
+                alert("There is an error with backend request")
+            })
     }
 
     render() {
@@ -76,15 +110,17 @@ export default class Login extends Component {
                     value={this.state.password} 
                     onChange={this.handleChange} />
                 </div>
-
-                <button type="submit" 
-                className="btn btn-primary btn-block" 
-                onClick={this.handleSubmit}>
-                    Sign in
-                    </button>
-                <p className="forgot-password text-right">
-                   <Link className="nav-link" to={"/forgot-password"}>Forgot your password?</Link>
-                </p>
+                <div>
+                    {this.renderRedirect()}
+                    <button type="submit" 
+                    className="btn btn-primary btn-block" 
+                    onClick={this.handleSubmit}>
+                        Sign in
+                        </button>
+                    <p className="forgot-password text-right">
+                    <Link className="nav-link" to={"/forgot-password"}>Forgot your password?</Link>
+                    </p>
+                </div>
             </form>
         );
     }
