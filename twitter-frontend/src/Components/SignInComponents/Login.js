@@ -32,28 +32,11 @@ export default class Login extends Component {
 
     handleSigningIn = () => {
         this.loginUser()
-            .then((response) => {
-                setAuthorizationToken(response)
-            })
             .then(() => {
                 if (IsUserSignedIn()) {
                     history.push("/main-page")
                 }
             });
-
-        //HOC -> funkcja, która zwróci komponent docelowy (parametr, zwrot: komponent)
-        //Sprawdzenie, czy userSignedIn
-        //tak -> przekieruj
-        //nie -> unauthorized/signin
-        //Użytkownik zalogowany
-        //intereceptors : axios docs
-        //każdy request -> wysłanie tokena do bakcendu i backend sprawdza czy token jest ważny (np. 15min)
-        //jeśli użytkownik jest zalogowany ale token wygaśnie - 401
-        //i wtedy np. list of tweets z tokenem do requesta. backend odbiera token - jeśli jest ważny to zwraca liste, a jeśli nie to 401 i jest strona 401
-        //Wylogowanie - usuwamy token z local storage i uderzamy do backendu - wyloguj
-        //localStorage.setItem('myValueInLocalStorage', event.target.value);
-        //za każdym razem trzeba sprawdzać czy response nie jest 401 
-        //React Hoooks -> zastępstwo HOC -> 401 + dodawanie tokena do każdego requesta
     }
 
     loginUser = () => {

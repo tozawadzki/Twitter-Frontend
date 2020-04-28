@@ -1,22 +1,20 @@
 import React, { Component } from "react";
 import axios from "axios";
-import { meUrl } from "../../const";
+import { newTweetUrl, tweetsUrl } from "../../const";
 import { toast } from "react-toastify";
+import Moment from "react-moment"
 
 export class Tweet extends Component {
 
   constructor(props) {
     super(props)
-
-    this.state = {
-    }
   }
 
   render() {
     return (
       <div className="row mx-auto justify-content-start border mt-1 p-2 w-100 align-items-center">
         <TweetContent data={this.props.data} />
-        <TweetActionBar />
+        <TweetActionBar tweetId={this.props.data.id} />
       </div>
     )
   }
@@ -26,10 +24,14 @@ export class TweetActionBar extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      liked: false
+      liked: false,
+      deleted: false,
+      editing: true
     }
     let likeStyle = {}
     this.likeClass = 'fa fa-heart mr-4 iconStyling'
+    this.deleteClass = 'fa fa-trash mr-4 iconStyling'
+    this.editClass = 'fa fa-pencil-square-o mr-4 iconStyling'
   }
 
   toggleLike = () => {
@@ -48,10 +50,32 @@ export class TweetActionBar extends Component {
     }
   }
 
+  deleteTweet = () => {
+    let deleteRequest = `${tweetsUrl}/${this.props.tweetId}`
+    axios.delete(deleteRequest)
+      .then(
+        window.location.reload()
+      )
+      .catch((error) => {
+        toast.error("There is a problem with deleting this tweet:", error.response)
+      })
+  }
+
+  editTweet = () => {
+    let editRequest = `${tweetsUrl}/${this.props.tweetId}`
+
+    axios.put(editRequest)
+      .catch((error) => {
+        toast.error("There is a problem with editing this tweet:", error.response)
+      })
+  }
+
   render() {
     return (
       <div className="col-sm-12 mt-1">
         <i style={this.likeStyle} onClick={this.toggleLike} className={this.likeClass}></i>
+        <i onClick={this.deleteTweet} className={this.deleteClass}></i>
+        <i onClick={this.editTweet} className={this.editClass}></i>
       </div>
     )
   }
@@ -64,9 +88,13 @@ export class TweetContent extends Component {
         <div className="col-12 d-flex align-items-center">
           <h4 className="font-weight-bold mb-1 d-inline-block" >
             {this.props.data.userFirstName} {this.props.data.userLastName}
+
           </h4>
         </div>
         <div className="col-12">
+          <p className="font-italic mb-0">
+            <Moment add={{ hours: 2 }} fromNow>{this.props.data.lastEditDate}</Moment>
+          </p>
           <p className="mb-0">{this.props.data.content}</p>
         </div>
       </div>
@@ -93,19 +121,17 @@ export class CreateTweet extends Component {
   handleSubmit = () => {
     if (this.state.content.length > 0) {
 
-      //Wywolanie funkcji CreateTweet
-      /*
       let postData = {
         content: this.state.content
       }
-      axios.post(meUrl, tweetData)
-        .then((response) => {
-              -> Z responsem z metody CreateTweet chyba nic nie musimy robić w tym przypadku?
-        })
+
+      axios.post(newTweetUrl, postData)
+        .then(
+          window.location.reload()
+        )
         .catch((error) => {
           toast.error("There is a problem with creating new tweet: ", error.response)
         })
-      */
 
       document.getElementById('contentField').value = ''
       this.setState({

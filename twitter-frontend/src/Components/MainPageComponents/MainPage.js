@@ -4,7 +4,7 @@ import { CreateTweet } from "./Tweet";
 import { Feed } from "./Feed";
 import axios from "axios";
 import { toast } from "react-toastify";
-
+import { tweetsUrl } from "../../const";
 export default class MainPage extends Component {
 
   constructor(props) {
@@ -12,6 +12,7 @@ export default class MainPage extends Component {
 
     this.state = {
       tweets: [{
+        id: 0,
         userFirstName: '',
         userLastName: '',
         creationDate: '',
@@ -29,39 +30,15 @@ export default class MainPage extends Component {
   }
 
   getTweets() {
-    //Wywołanie metody GetTweets
-    /*
-    let postData = {
-
-    }
-
-    axios.post(tweetsListUrl, postData)
+    axios.get(tweetsUrl)
       .then((response) => {
         this.setState({
-            tweets: response.data -> Czy to automatycznie się zmapuje?
+          tweets: response.data
         })
       })
       .catch((error) => {
         toast.error("There is a problem with getting list of tweets:", error.response)
       })
-      */
-
-    //Hardcode do testów
-    this.setState({
-      tweets: [{
-        userFirstName: 'Jan',
-        userLastName: 'Niezbędny',
-        creationDate: '22-04-2020',
-        lastEditDate: '22-04-2020',
-        content: 'Produkuję gąbki'
-      }, {
-        userFirstName: 'Dr',
-        userLastName: 'Oetker',
-        creationDate: '22-04-2020',
-        lastEditDate: '22-04-2020',
-        content: 'Guseppe'
-      }]
-    })
   }
 
   render() {
@@ -69,7 +46,6 @@ export default class MainPage extends Component {
 
       <div>
         <Userbar />
-
         <div className="container">
           <div className="row">
             <div className="col">

@@ -10,8 +10,9 @@ import PasswordSent from "./Components/SignInComponents/PasswordSent";
 import Unauthorized from './Components/SignInComponents/Unauthorized';
 import MainPage from "./Components/MainPageComponents/MainPage";
 import axios from 'axios';
+import { toast } from 'react-toastify';
+import { setAuthorizationToken } from "./Helpers";
 
-//na komponent
 export default class App extends Component {
 
   constructor() {
@@ -35,8 +36,18 @@ export default class App extends Component {
         });
         return error;
       }
+      if (this.state.redirectTo500 === true) {
+        toast.error("Internal server error");
+        history.push("/sign-in");
+      }
       return Promise.reject(error)
     })
+
+    let jwtToken = localStorage.getItem("JWT");
+    if (jwtToken !== undefined && jwtToken !== null) {
+      setAuthorizationToken(jwtToken);
+    }
+
   }
 
   render() {
