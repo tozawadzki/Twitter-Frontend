@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import './Styles/App.css';
-import { Router, Switch, Route, Link } from "react-router-dom";
+import { Router, Switch, Route } from "react-router-dom";
 import history from './history';
 import Login from "./Components/SignInComponents/Login";
 import SignUp from "./Components/SignInComponents/SignUp";
@@ -9,9 +9,10 @@ import ForgotPassword from "./Components/SignInComponents/ForgotPassword";
 import PasswordSent from "./Components/SignInComponents/PasswordSent";
 import Unauthorized from './Components/SignInComponents/Unauthorized';
 import MainPage from "./Components/MainPageComponents/MainPage";
+import NavBar from "./Components/SignInComponents/NavBar";
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { setAuthorizationToken } from "./Helpers";
+import { setAuthorizationToken, getJwtTokenFromLocalStorage } from "./Helpers";
 
 export default class App extends Component {
 
@@ -43,7 +44,7 @@ export default class App extends Component {
       return Promise.reject(error)
     })
 
-    let jwtToken = localStorage.getItem("JWT");
+    let jwtToken = getJwtTokenFromLocalStorage();
     if (jwtToken !== undefined && jwtToken !== null) {
       setAuthorizationToken(jwtToken);
     }
@@ -54,21 +55,7 @@ export default class App extends Component {
     return (
       <Router history={history}>
         <div className="App">
-          <nav className="navbar navbar-expand-lg navbar-light fixed-top">
-            <div className="container">
-              <div className="collapse navbar-collapse" id="navbarTogglerDemo02">
-                <ul className="navbar-nav ml-auto">
-                  <li className="nav-item">
-                    <Link className="nav-link" to={"/sign-in"}>Sign in</Link>
-                  </li>
-                  <li className="nav-item">
-                    <Link className="nav-link" to={"/sign-up"}>Sign up</Link>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </nav>
-
+          <NavBar />
           <div className="auth-wrapper">
             <div className="auth-inner">
               <Switch>
@@ -83,7 +70,7 @@ export default class App extends Component {
             </div>
           </div>
         </div>
-      </Router>
+      </Router >
     );
   }
 }

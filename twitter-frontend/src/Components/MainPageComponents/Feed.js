@@ -1,7 +1,7 @@
 import React, { Component } from "react";
-import { Tweet } from "./Tweet";
+import Tweet from "./TweetComponents/Tweet";
 
-export class Feed extends Component {
+export default class Feed extends Component {
   render() {
     return (
       <div>

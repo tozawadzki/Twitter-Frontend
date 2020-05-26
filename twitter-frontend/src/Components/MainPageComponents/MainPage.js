@@ -1,12 +1,13 @@
 import React, { Component } from "react";
-import { Userbar } from "./UserBar";
-import { CreateTweet } from "./Tweet";
-import { Feed } from "./Feed";
+import Userbar from "./UserBar";
+import CreateTweet from "./TweetComponents/CreateTweet";
+import Feed from "./Feed";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { tweetsUrl } from "../../const";
-export default class MainPage extends Component {
+import { tweetsUrl, newTweetUrl } from "../../const";
+import Logo from "./Logo";
 
+export default class MainPage extends Component {
   constructor(props) {
     super(props)
 
@@ -18,11 +19,10 @@ export default class MainPage extends Component {
         creationDate: '',
         lastEditDate: '',
         content: ''
-      }]
-    }
+      }],
+      newTweetContent: ''
 
-    this.newTweets = []
-    this.newPost = []
+    }
   }
 
   componentDidMount() {
@@ -41,22 +41,46 @@ export default class MainPage extends Component {
       })
   }
 
+  handleChange = (e) => {
+    this.setState({
+      newTweetContent: e.target.value
+    })
+  }
+
+  handleSubmit = () => {
+    if (this.state.newTweetContent.length > 0) {
+
+      let postData = {
+        content: this.state.newTweetContent
+      }
+
+      axios.post(newTweetUrl, postData)
+        .then(({ data }) => {
+          const { tweets } = this.state;
+          const newTweetsList = [...tweets, data]
+          this.setState({
+            tweets: newTweetsList,
+            content: ''
+          })
+        })
+        .catch((error) => {
+          toast.error("There is a problem with creating new tweet: ", error.response)
+        })
+
+      this.setState({
+        newTweetContent: ''
+      })
+    }
+  }
+
   render() {
+    console.log(this.state)
     return (
-
-      <div>
+      <div className="container">
+        <Logo />
         <Userbar />
-        <div className="container">
-          <div className="row">
-            <div className="col">
-              <CreateTweet />
-            </div>
-          </div>
-        </div>
-
-        <div className="container">
-          <Feed data={this.state.tweets} />
-        </div>
+        <CreateTweet handleSubmit={this.handleSubmit} handleChange={this.handleChange} newTweetContent={this.state.newTweetContent} />
+        <Feed data={this.state.tweets} />
       </div>
     )
   }

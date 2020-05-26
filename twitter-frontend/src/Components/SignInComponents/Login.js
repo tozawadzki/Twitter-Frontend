@@ -3,9 +3,8 @@ import history from '../../history.js';
 import React, { Component } from "react";
 import { Link } from "react-router-dom"
 import { loginUrl } from "../../const.js"
-import { IsUserSignedIn, setAuthorizationToken } from "../../Helpers";
+import { IsUserSignedIn, setAuthorizationToken, jwtToLocalStorage } from "../../Helpers";
 import { toast } from "react-toastify";
-
 export default class Login extends Component {
     constructor(props) {
         super(props);
@@ -32,6 +31,10 @@ export default class Login extends Component {
 
     handleSigningIn = () => {
         this.loginUser()
+            .then((response) => {
+                jwtToLocalStorage(response)
+                setAuthorizationToken(response)
+            })
             .then(() => {
                 if (IsUserSignedIn()) {
                     history.push("/main-page")
@@ -47,12 +50,10 @@ export default class Login extends Component {
 
         return axios.post(loginUrl, loginData)
             .then((response) => {
-                let receivedToken = response.data;
-                localStorage.setItem("JWT", receivedToken);
                 return response.data;
             })
-            .catch(error => {
-                toast.error("There is an error with signing in: ", error.response)
+            .catch(() => {
+                toast.error("Invalid username / password")
             });
     }
 

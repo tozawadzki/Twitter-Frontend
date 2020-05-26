@@ -1,4 +1,5 @@
 import axios from "axios";
+import history from './history.js';
 
 export const IsUserSignedIn = () => {
     let jwtToken = localStorage.getItem("JWT");
@@ -15,4 +16,17 @@ export const setAuthorizationToken = (token) => {
         return true;
     }
     delete axios.defaults.headers.common['Authorization'];
+}
+
+export const removeToken = () => {
+    localStorage.removeItem("JWT")
+    history.push("sign-in")
+}
+
+export const jwtToLocalStorage = (token) => {
+    localStorage.setItem("JWT", token)
+}
+
+export const getJwtTokenFromLocalStorage = () => {
+    return localStorage.getItem("JWT")
 }

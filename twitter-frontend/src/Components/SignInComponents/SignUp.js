@@ -40,13 +40,7 @@ export default class SignUp extends Component {
             Password: this.state.password
         }
 
-        const axiosConfig = {
-            headers: {
-                'Content-Type': 'application/json',
-            }
-        }
-
-        axios.post(newUserUrl, postData, axiosConfig)
+        axios.post(newUserUrl, postData)
             .catch(() => {
                 toast.error("There is a problem with creating a new user", { position: toast.POSITION.TOP_CENTER });
             })
